@@ -22,8 +22,12 @@ require_plugin 'ruby'
 require_plugin 'kernel'
 
 case languages[:ruby][:host_os]
+when /aix(.+)$/
+  os "aix"
 when /darwin(.+)$/
   os "darwin"
+when /hpux(.+)$/
+  os "hpux"
 when /linux/
   os "linux"
 when /freebsd(.+)$/
