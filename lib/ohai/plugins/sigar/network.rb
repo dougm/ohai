@@ -87,6 +87,16 @@ sigar.net_interface_list.each do |cint|
   end
 end
 
+begin
+  sigar.arp_list.each do |arp|
+    next unless iface[arp.ifname] # this should never happen
+    iface[arp.ifname][:arp] = Mash.new unless iface[arp.ifname][:arp]
+    iface[arp.ifname][:arp][arp.address] = arp.hwaddr
+  end
+rescue
+  #64-bit AIX for example requires 64-bit caller
+end
+
 counters[:network][:interfaces] = net_counters
 
 network["interfaces"] = iface
