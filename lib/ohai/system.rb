@@ -200,6 +200,8 @@ module Ohai
           return true
         rescue IOError => e
           Ohai::Log.debug("No #{plugin_name} at #{check_path}")
+        rescue SystemExit => e
+          raise
         rescue Exception,Errno::ENOENT => e
           Ohai::Log.debug("Plugin #{plugin_name} threw exception #{e.inspect} #{e.backtrace.join("\n")}")
         end
@@ -228,7 +230,11 @@ module Ohai
       when Hash,Mash,Array
         JSON.pretty_generate(@data[a])
       when String
-        JSON.pretty_generate(@data[a].to_a)
+        if @data[a].respond_to?(:lines)
+          JSON.pretty_generate(@data[a].lines.to_a)
+        else
+          JSON.pretty_generate(@data[a].to_a)
+        end
       else
         raise ArgumentError, "I can only generate JSON for Hashes, Mashes, Arrays and Strings. You fed me a #{@data[a].class}!"
       end
